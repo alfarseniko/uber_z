@@ -7,7 +7,7 @@ An automated smart contract for ride hailing apps like uber using the arbitrum s
 ## Steps
 
 - owner address in constructor ✅
-- customer / driver database??  driver/customer sign up?
+- customer / driver database??  driver/customer sign up? ✅
 - given starting location and ending location
 - given the distance 
 - given the waiting time by either driver or passenger

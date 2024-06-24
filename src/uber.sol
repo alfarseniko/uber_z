@@ -20,11 +20,7 @@ contract Uber {
 
     uint256 private constant RESOLUTION = 1000000; // Coordinates are calculated by dividing with RESOLUTION
 
-    // Restricted options for the gender of the Passenger/Driver
-    enum Gender {
-        MALE,
-        FEMALE
-    }
+    uint256 public s_ratePerKM;
 
     struct Point {
         int256 lat; // Latitude of the point with 6 decimal points resolution
@@ -42,23 +38,21 @@ contract Uber {
 
     struct DriverInfo {
         string name; // Name of the driver
-        Gender gender; // Gender of the driver
         string vehicleLicensePlate; // Vehicle's license plate number
-        bool isActive; // Indicates if the driver is currently active
-    }
-
-    struct PassengerInfo {
-        string name; // Name of the passenger
-        Gender gender; // Gender of the passenger
     }
 
     // A mapping of addresses to the information of Drivers
     mapping(address => DriverInfo) private driverDatabase;
 
     // A mapping of addresses to the information of Passengers
-    mapping(address => PassengerInfo) private passengerDatabase;
+    mapping(address => string) private passengerDatabase;
 
     // Modifiers
+    modifier onlyOwner() {
+        require(msg.sender == i_owner);
+        _;
+    }
+    // Events
 
     // Functions Order:
     //// constructor
@@ -67,8 +61,25 @@ contract Uber {
         i_owner = msg.sender;
     }
     //// receive
+    receive() external;
+
     //// fallback
+    fallback() external;
+
     //// external
+
+    // This function registers a driver with info in the smart contract
+    function registerDriver(
+        string memory _name,
+        string memory _license
+    ) external {
+        driverDatabase[msg.sender] = DriverInfo(_name, _license);
+    }
+
+    // This function registers a passenger with info in the smart contract
+    function registerPassenger(string memory _name) external {
+        passengerDatabase[msg.sender] = _name;
+    }
     //// public
     //// internal
     //// private
