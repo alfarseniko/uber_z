@@ -11,6 +11,7 @@ pragma solidity ^0.8.24;
  @title An automated uber payment app
  @author Haris Waheed Bhatti
  @notice This contract is for the payment of fares after rides
+         The contract is being made for US Dollars and payments made in Arbitrum
  */
 
 contract Uber {
@@ -20,7 +21,8 @@ contract Uber {
 
     uint256 private constant RESOLUTION = 1000000; // Coordinates are calculated by dividing with RESOLUTION
 
-    uint256 public s_ratePerKM;
+    uint256 public s_ratePerKm; // Rate per Km to calculate fare
+    uint256 public s_baseFare; // Base Fare for total fare calculation
 
     struct Point {
         int256 lat; // Latitude of the point with 6 decimal points resolution
@@ -52,19 +54,15 @@ contract Uber {
         require(msg.sender == i_owner);
         _;
     }
-    // Events
 
     // Functions Order:
     //// constructor
 
-    constructor() {
-        i_owner = msg.sender;
+    constructor(uint256 _initialRatePerKm, uint256 _initialBaseFare) {
+        s_ratePerKm = _initialRatePerKm; // Sets the initial rate per km
+        s_baseFare = _initialBaseFare; // Sets the initial base fare
+        i_owner = msg.sender; // Sets the owner to the creator of the contract
     }
-    //// receive
-    receive() external;
-
-    //// fallback
-    fallback() external;
 
     //// external
 
@@ -79,6 +77,16 @@ contract Uber {
     // This function registers a passenger with info in the smart contract
     function registerPassenger(string memory _name) external {
         passengerDatabase[msg.sender] = _name;
+    }
+
+    // This function allows the owner to change the rate per KM for the fare
+    function changeRatePerKm(uint256 _newRate) external onlyOwner {
+        s_ratePerKm = _newRate;
+    }
+
+    // This function allows the owner to change the baseFare
+    function changeBaseFare(uint256 _baseFare) external onlyOwner {
+        s_baseFare = _baseFare;
     }
     //// public
     //// internal

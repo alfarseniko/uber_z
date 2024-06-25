@@ -10,7 +10,6 @@ An automated smart contract for ride hailing apps like uber using the arbitrum s
 - customer / driver database??  driver/customer sign up? ✅
 - given starting location and ending location
 - given the distance 
-- given the waiting time by either driver or passenger
 - price converters from chainlink oracle
 - admin permissions
 - automated payments
@@ -20,4 +19,8 @@ An automated smart contract for ride hailing apps like uber using the arbitrum s
 
 - representing latitude and longitude in solidity
 - how to maintain a driver/passenger database with finding ability
-- 
+- convert ARB/USD oracle price to USD/ARB price
+
+
+ARB/USD Oracle Address on Arb Sepolia
+0xD1092a65338d049DB68D7Be6bD89d17a0929945e
