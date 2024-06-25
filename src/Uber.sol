@@ -4,6 +4,8 @@
 pragma solidity ^0.8.24;
 
 // Imports
+import {AggregatorV3Interface} from "../lib/chainlink/AggregatorV3Interface.sol";
+import {PriceConverter} from "./PriceConverter.sol";
 
 // Interfaces, Libraries and Contracts
 
