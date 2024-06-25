@@ -8,10 +8,9 @@ An automated smart contract for ride hailing apps like uber using the arbitrum s
 
 - owner address in constructor ✅
 - customer / driver database??  driver/customer sign up? ✅
-- given starting location and ending location
-- given the distance 
-- price converters from chainlink oracle
-- admin permissions
+- formula which takes distance and gives fare 
+- price converters from chainlink oracle ✅
+- admin permissions ✅
 - automated payments
 
 

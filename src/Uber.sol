@@ -18,6 +18,10 @@ import {PriceConverter} from "./PriceConverter.sol";
 
 contract Uber {
     // Type Declarations
+    /**
+    @dev Always input USD price with 36 decimals
+     */
+    using PriceConverter for uint256;
     // State Variables
     address private immutable i_owner; // Address of the contract owner
 
@@ -46,10 +50,13 @@ contract Uber {
     }
 
     // A mapping of addresses to the information of Drivers
-    mapping(address => DriverInfo) private driverDatabase;
+    mapping(address => DriverInfo) private s_driverDatabase;
 
     // A mapping of addresses to the information of Passengers
-    mapping(address => string) private passengerDatabase;
+    mapping(address => string) private s_passengerDatabase;
+
+    // An instance of the contract AggregatorV3Interface
+    AggregatorV3Interface private s_priceFeed;
 
     // Modifiers
     modifier onlyOwner() {
@@ -59,10 +66,17 @@ contract Uber {
 
     // Functions Order:
     //// constructor
-
-    constructor(uint256 _initialRatePerKm, uint256 _initialBaseFare) {
+    /**
+    @dev Always input USD price with 36 decimals
+     */
+    constructor(
+        uint256 _initialRatePerKm,
+        uint256 _initialBaseFare,
+        address priceFeedAddress
+    ) {
         s_ratePerKm = _initialRatePerKm; // Sets the initial rate per km
         s_baseFare = _initialBaseFare; // Sets the initial base fare
+        s_priceFeed = AggregatorV3Interface(priceFeedAddress);
         i_owner = msg.sender; // Sets the owner to the creator of the contract
     }
 
@@ -73,12 +87,12 @@ contract Uber {
         string memory _name,
         string memory _license
     ) external {
-        driverDatabase[msg.sender] = DriverInfo(_name, _license);
+        s_driverDatabase[msg.sender] = DriverInfo(_name, _license);
     }
 
     // This function registers a passenger with info in the smart contract
     function registerPassenger(string memory _name) external {
-        passengerDatabase[msg.sender] = _name;
+        s_passengerDatabase[msg.sender] = _name;
     }
 
     // This function allows the owner to change the rate per KM for the fare
@@ -91,7 +105,22 @@ contract Uber {
         s_baseFare = _baseFare;
     }
     //// public
+
+    /**
+    @dev Distance should always be in whole numbers represented in metres (m)
+     */
+    function calculateFare(uint256 _distanceInMetre) public pure returns (uint256) {
+        uint256 _basefare = convertUsdToArb(s_baseFare);;
+        uint256 _ratePerKm = convertUsdToArb(s_ratePerKm);
+        // Rates and base fare has been converted to ARB represented as 1e18
+
+        uint256 _farePrice = _basefare + (_ratePerKm * _distanceInMetre);
+    }
     //// internal
+    function convertUsdToArb(uint256 _usdAmount) internal view returns (uint256) {
+        uint256 convertedAmount = _usdAmount.getConversionRate(s_priceFeed);
+        return convertedAmount;
+    }
     //// private
     //// view / pure
 }

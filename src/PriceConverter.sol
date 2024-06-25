@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 
 import {AggregatorV3Interface} from "../lib/chainlink/AggregatorV3Interface.sol";
 
-contract PriceConverter {
+library PriceConverter {
     function getPrice(
         AggregatorV3Interface priceFeed
     ) internal view returns (uint256) {
